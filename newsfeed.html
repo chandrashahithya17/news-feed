@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsWave - Your Daily Digital Digest</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --health: #4cc9f0;
+            --tech: #4361ee;
+            --business: #3a0ca3;
+            --sports: #f8961e;
+            --entertainment: #f72585;
+            --science: #7209b7;
+            --politics: #e63946;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .search-bar {
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            width: 40%;
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            padding: 12px 20px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .search-bar button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            cursor: pointer;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 20px;
+        }
+
+        .user-actions i {
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .user-actions i:hover {
+            color: var(--accent);
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .categories {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .categories li {
+            cursor: pointer;
+            padding: 8px 20px;
+            border-radius: 25px;
+            white-space: nowrap;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .categories li.active {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .categories li[data-category="latest"] { background: var(--accent); }
+        .categories li[data-category="general"] { background: var(--primary); }
+        .categories li[data-category="technology"] { background: var(--tech); }
+        .categories li[data-category="business"] { background: var(--business); }
+        .categories li[data-category="entertainment"] { background: var(--entertainment); }
+        .categories li[data-category="health"] { background: var(--health); }
+        .categories li[data-category="science"] { background: var(--science); }
+        .categories li[data-category="sports"] { background: var(--sports); }
+        .categories li[data-category="politics"] { background: var(--politics); }
+
+        .categories li:not(.active) {
+            background: #f8f9fa !important;
+            color: var(--dark);
+        }
+
+        .categories li:not(.active):hover {
+            background: #e9ecef !important;
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        /* News Feed */
+        .news-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 4px solid var(--primary);
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-image {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-category {
+            display: inline-block;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .news-category.health { background: var(--health); }
+        .news-category.technology { background: var(--tech); }
+        .news-category.business { background: var(--business); }
+        .news-category.entertainment { background: var(--entertainment); }
+        .news-category.science { background: var(--science); }
+        .news-category.sports { background: var(--sports); }
+        .news-category.politics { background: var(--politics); }
+        .news-category.general { background: var(--primary); }
+        .news-category.latest { background: var(--accent); }
+
+        .news-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .news-excerpt {
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #e9ecef;
+            padding-top: 15px;
+        }
+
+        .news-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .news-actions i {
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .news-actions i:hover {
+            color: var(--accent);
+        }
+
+        .featured-news {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .main-featured {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 400px;
+        }
+
+        .main-featured img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .featured-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 30px;
+        }
+
+        .side-featured {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .side-featured .news-card {
+            height: calc(50% - 10px);
+        }
+
+        /* Latest News Section */
+        .latest-news-section {
+            margin: 40px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .latest-news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .latest-news-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .latest-news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .latest-news-image {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .latest-news-content {
+            padding: 15px;
+        }
+
+        .latest-news-time {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .sidebar-widget {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .trending-list {
+            list-style: none;
+        }
+
+        .trending-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .trending-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .trending-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray);
+        }
+
+        .trending-content h4 {
+            margin-bottom: 5px;
+        }
+
+        .weather-widget {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 20px;
+        }
+
+        .weather-icon {
+            font-size: 3rem;
+            margin: 15px 0;
+        }
+
+        .temperature {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .weather-detail {
+            text-align: center;
+        }
+
+        .weather-detail i {
+            margin-bottom: 5px;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-actions .notification-container {
+            position: relative;
+        }
+
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .news-card,
+        body.dark-mode .sidebar-widget,
+        body.dark-mode nav,
+        body.dark-mode .latest-news-card {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .news-excerpt,
+        body.dark-mode .news-meta {
+            color: #b0b0b0;
+        }
+
+        .news-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .read-later-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .modal-content {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .stats-widget canvas {
+            width: 100% !important;
+            height: 200px !important;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+
+        .page-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .api-status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .api-status.live {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .api-status.fallback {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .category-header {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px;
+        }
+
+        .category-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .category-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Breaking News Banner */
+        .breaking-news {
+            background: linear-gradient(90deg, var(--accent), var(--danger));
+            color: white;
+            padding: 12px 0;
+            margin-bottom: 20px;
+        }
+
+        .breaking-news-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .breaking-label {
+            background: white;
+            color: var(--danger);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .breaking-text {
+            flex: 1;
+            font-weight: 600;
+        }
+
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee span {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 25s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 50px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #495057;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--accent);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #495057;
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .featured-news {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .search-bar {
+                width: 50%;
+            }
+            
+            .latest-news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-bar {
+                width: 100%;
+                order: 3;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories {
+                gap: 10px;
+            }
+            
+            .categories li {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-newspaper"></i>
+                    <span>NewsWave</span>
+                </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for news..." id="searchInput">
+                    <button id="searchBtn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="user-actions">
+                    <button class="dark-mode-toggle" id="darkModeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="notification-container">
+                        <i class="fas fa-bell" id="notificationsBtn"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <i class="fas fa-bookmark" id="bookmarksBtn"></i>
+                    <i class="fas fa-user-circle" id="profileBtn"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breaking News Banner -->
+    <div class="breaking-news">
+        <div class="container">
+            <div class="breaking-news-content">
+                <div class="breaking-label">BREAKING</div>
+                <div class="breaking-text marquee">
+                    <span>🚨 JUST IN: Major breakthrough in quantum computing achieved by international research team • Global stock markets reach all-time highs amid economic recovery • New climate agreement signed by 150+ countries • </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <ul class="categories" id="categoriesList">
+                <li class="active" data-category="latest">⚡ Latest</li>
+                <li data-category="general">🌍 All News</li>
+                <li data-category="technology">💻 Technology</li>
+                <li data-category="business">💼 Business</li>
+                <li data-category="entertainment">🎬 Entertainment</li>
+                <li data-category="health">🏥 Health</li>
+                <li data-category="science">🔬 Science</li>
+                <li data-category="sports">⚽ Sports</li>
+                <li data-category="politics">🏛️ Politics</li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Category Header -->
+        <div class="category-header" id="categoryHeader">
+            <h1>⚡ Latest News</h1>
+            <p>Real-time updates from all categories - Stay informed with the most recent developments</p>
+        </div>
+
+        <!-- API Status -->
+        <div class="api-status" id="apiStatus">
+            <i class="fas fa-sync-alt"></i> Loading latest news...
+        </div>
+
+        <!-- Latest News Section (Visible only in Latest category) -->
+        <div class="latest-news-section" id="latestNewsSection">
+            <div class="section-header">
+                <h2 class="section-title">🕒 Just Published</h2>
+                <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="latest-news-grid" id="latestNewsGrid">
+                <!-- Latest news cards will be populated here -->
+            </div>
+        </div>
+
+        <!-- News Filters -->
+        <div class="news-filters">
+            <button class="filter-btn active" data-sort="publishedAt">Latest</button>
+            <button class="filter-btn" data-sort="popularity">Most Popular</button>
+            <select class="filter-btn" id="countrySelect">
+                <option value="us">🇺🇸 United States</option>
+                <option value="gb">🇬🇧 United Kingdom</option>
+                <option value="ca">🇨🇦 Canada</option>
+                <option value="au">🇦🇺 Australia</option>
+                <option value="in">🇮🇳 India</option>
+            </select>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <i class="fas fa-spinner"></i>
+            <p>Loading latest news...</p>
+        </div>
+
+        <!-- Featured News -->
+        <div class="featured-news" id="featuredNews">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <div class="main-content">
+            <!-- News Feed -->
+            <div class="news-feed" id="newsFeed">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">🔥 Trending Now</h3>
+                    <ul class="trending-list" id="trendingList">
+                        <!-- Will be populated by JavaScript -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget weather-widget">
+                    <h3 class="widget-title">🌤️ Weather</h3>
+                    <div class="weather-icon">
+                        <i class="fas fa-sun" id="weatherIcon"></i>
+                    </div>
+                    <div class="temperature" id="temperature">24°C</div>
+                    <div class="weather-condition" id="weatherCondition">Sunny</div>
+                    <div class="location" id="location">New York, NY</div>
+                    <div class="weather-details">
+                        <div class="weather-detail">
+                            <i class="fas fa-wind"></i>
+                            <div id="windSpeed">12 km/h</div>
+                        </div>
+                        <div class="weather-detail">
+                            <i class="fas fa-tint"></i>
+                            <div id="humidity">45%</div>
+                        </div>
+                        <div class="weather-detail">
+                            <i class="fas fa-temperature-high"></i>
+                            <div id="feelsLike">26°C</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget stats-widget">
+                    <h3 class="widget-title">📊 News Categories</h3>
+                    <canvas id="newsChart"></canvas>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">📰 Newsletter</h3>
+                    <p>Stay updated with our daily news digest.</p>
+                    <div class="search-bar" style="margin-top: 15px;">
+                        <input type="email" placeholder="Your email address" id="newsletterEmail">
+                        <button id="subscribeBtn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Read Later Modal -->
+    <div class="read-later-modal" id="readLaterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📑 Saved Articles</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div id="savedArticles">
+                <!-- Saved articles will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>NewsWave</h3>
+                    <p>Your trusted source for the latest news and updates from around the world.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-category="latest">Latest News</a></li>
+                        <li><a href="#" data-category="technology">Technology</a></li>
+                        <li><a href="#" data-category="politics">Politics</a></li>
+                        <li><a href="#" data-category="business">Business</a></li>
+                        <li><a href="#" data-category="health">Health</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Advertise</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 News Street, NY 10001</li>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@newswave.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2023 NewsWave. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Comprehensive News Database with Proper Categorization
+        const NEWS_DATABASE = {
+            latest: [
+                {
+                    title: "Breaking: Quantum Computer Solves Decade-Old Problem in Minutes",
+                    description: "Researchers achieve unprecedented computational speed, potentially revolutionizing multiple industries.",
+                    urlToImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date().toISOString(),
+                    url: "#",
+                    source: { name: "Science Daily" },
+                    category: "science",
+                    timeAgo: "5 minutes ago"
+                },
+                {
+                    title: "Stock Markets Surge to Record Highs Amid Economic Optimism",
+                    description: "Global indices climb as positive economic data and corporate earnings boost investor confidence.",
+                    urlToImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Financial Times" },
+                    category: "business",
+                    timeAgo: "10 minutes ago"
+                },
+                {
+                    title: "Major Film Studio Announces Groundbreaking Virtual Reality Movie Experience",
+                    description: "New technology allows viewers to immerse themselves completely in cinematic worlds.",
+                    urlToImage: "https://images.unsplash.com/photo-1489599809505-7c8e1c75ce13?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Entertainment Weekly" },
+                    category: "entertainment",
+                    timeAgo: "15 minutes ago"
+                },
+                {
+                    title: "New Medical Study Reveals Breakthrough in Alzheimer's Treatment",
+                    description: "Experimental drug shows 80% improvement in cognitive function during clinical trials.",
+                    urlToImage: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Medical Research" },
+                    category: "health",
+                    timeAgo: "20 minutes ago"
+                },
+                {
+                    title: "Revolutionary Solar Technology Achieves 50% Efficiency Milestone",
+                    description: "New photovoltaic cells could make solar energy cheaper than fossil fuels.",
+                    urlToImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Clean Energy" },
+                    category: "technology",
+                    timeAgo: "25 minutes ago"
+                },
+                {
+                    title: "International Climate Summit Reaches Historic Agreement",
+                    description: "World leaders commit to ambitious carbon reduction targets ahead of schedule.",
+                    urlToImage: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Global News" },
+                    category: "politics",
+                    timeAgo: "30 minutes ago"
+                }
+            ],
+            technology: [
+                {
+                    title: "Apple Unveils Revolutionary Foldable iPhone with Holographic Display",
+                    description: "The new iPhone features a seamless foldable design and groundbreaking holographic technology that projects 3D interfaces.",
+                    urlToImage: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80",
+                    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Tech Insider" },
+                    category: "technology"
+                },
+                {
+                    title: "Google's Quantum Computer Solves Problem in 3 Minutes That Would Take Supercomputer 10,000 Years",
+                    description: "Breakthrough in quantum computing achieves computational milestone, opening new possibilities for scientific research.",
+                    urlToImage: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Quantum Weekly" },
+                    category: "technology"
+                },
+                {
+                    title: "Microsoft Announces AI Assistant That Can Write Complex Code",
+                    description: "New AI system demonstrates ability to understand programming requirements and generate efficient, bug-free code.",
+                    urlToImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Developer News" },
+                    category: "technology"
+                },
+                {
+                    title: "Tesla Reveals Solar Roof Tiles That Generate 50% More Energy",
+                    description: "Next-generation solar technology integrated into roofing materials promises to revolutionize home energy production.",
+                    urlToImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Clean Tech" },
+                    category: "technology"
+                }
+            ],
+            health: [
+                {
+                    title: "Breakthrough Cancer Treatment Shows 95% Success Rate in Clinical Trials",
+                    description: "New immunotherapy approach using modified T-cells demonstrates unprecedented effectiveness against multiple cancer types.",
+                    urlToImage: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1171&q=80",
+                    publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Medical Breakthroughs" },
+                    category: "health"
+                },
+                {
+                    title: "New Study: Mediterranean Diet Reduces Heart Disease Risk by 30%",
+                    description: "Comprehensive 10-year research confirms significant cardiovascular benefits of traditional Mediterranean eating patterns.",
+                    urlToImage: "https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Nutrition Research" },
+                    category: "health"
+                },
+                {
+                    title: "FDA Approves First AI-Powered Diagnostic Tool for Early Alzheimer's Detection",
+                    description: "Revolutionary software analyzes brain scans with 98% accuracy, enabling earlier intervention and treatment.",
+                    urlToImage: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Health Innovation" },
+                    category: "health"
+                },
+                {
+                    title: "Global Initiative Vaccinates 1 Billion Children Against Preventable Diseases",
+                    description: "Massive vaccination campaign reaches milestone in effort to eliminate childhood diseases worldwide.",
+                    urlToImage: "https://images.unsplash.com/photo-1584634731339-252c581abfc5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 9 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Global Health" },
+                    category: "health"
+                }
+            ],
+            business: [
+                {
+                    title: "Stock Markets Hit Record High as Economic Recovery Accelerates",
+                    description: "Global markets surge amid strong corporate earnings, positive economic indicators, and renewed investor confidence.",
+                    urlToImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Financial Times" },
+                    category: "business"
+                },
+                {
+                    title: "Amazon Announces $10 Billion Investment in African E-commerce Infrastructure",
+                    description: "Massive investment aims to build logistics networks and digital payment systems across the continent.",
+                    urlToImage: "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Business Global" },
+                    category: "business"
+                },
+                {
+                    title: "Cryptocurrency Market Cap Surpasses $3 Trillion Milestone",
+                    description: "Digital assets reach new heights as institutional adoption increases and regulatory clarity improves.",
+                    urlToImage: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Crypto News" },
+                    category: "business"
+                }
+            ],
+            sports: [
+                {
+                    title: "Underdog Team Wins Championship in Historic Upset Victory",
+                    description: "In one of the biggest surprises in sports history, the underdog team clinched the championship with a last-second goal.",
+                    urlToImage: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Sports Network" },
+                    category: "sports"
+                },
+                {
+                    title: "Olympic Committee Announces New Host City for 2032 Games",
+                    description: "After extensive evaluation, the international committee selects a city known for its sustainability initiatives.",
+                    urlToImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Olympic News" },
+                    category: "sports"
+                },
+                {
+                    title: "Tennis Star Breaks 20-Year Record with Grand Slam Victory",
+                    description: "Young prodigy becomes the youngest player in decades to win all four major tournaments in a single season.",
+                    urlToImage: "https://images.unsplash.com/photo-1622279457486-62dcc4a431ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Tennis World" },
+                    category: "sports"
+                }
+            ],
+            entertainment: [
+                {
+                    title: "Blockbuster Movie Franchise Announces Final Trilogy",
+                    description: "The beloved sci-fi series will conclude with three new films featuring original cast members and new characters.",
+                    urlToImage: "https://images.unsplash.com/photo-1489599809505-7c8e1c75ce13?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Cinema News" },
+                    category: "entertainment"
+                },
+                {
+                    title: "Music Streaming Service Hits 500 Million Active Users",
+                    description: "Platform reaches milestone as music consumption continues to shift from ownership to access models.",
+                    urlToImage: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Music Industry" },
+                    category: "entertainment"
+                },
+                {
+                    title: "Award-Winning Director Returns with Ambitious Historical Epic",
+                    description: "After five years, the acclaimed filmmaker unveils a sweeping drama based on true historical events.",
+                    urlToImage: "https://images.unsplash.com/photo-1485846234645-a62644f84728?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Film Updates" },
+                    category: "entertainment"
+                }
+            ],
+            science: [
+                {
+                    title: "NASA's New Telescope Discovers Earth-like Exoplanet in Habitable Zone",
+                    description: "Scientists identify potentially habitable planet with conditions that could support liquid water and possibly life.",
+                    urlToImage: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Space Exploration" },
+                    category: "science"
+                },
+                {
+                    title: "Breakthrough in Nuclear Fusion Achieves Net Energy Gain",
+                    description: "Scientists successfully produce more energy from fusion reaction than consumed, marking major step toward clean energy.",
+                    urlToImage: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Energy Research" },
+                    category: "science"
+                },
+                {
+                    title: "Archaeologists Uncover Lost Ancient City in Amazon Rainforest",
+                    description: "Advanced laser mapping technology reveals extensive urban settlement dating back 2,500 years.",
+                    urlToImage: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Archaeology News" },
+                    category: "science"
+                }
+            ],
+            politics: [
+                {
+                    title: "Global Climate Agreement Reached with Binding Emissions Targets",
+                    description: "World leaders sign historic pact committing to specific carbon reduction goals and climate finance mechanisms.",
+                    urlToImage: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Political News" },
+                    category: "politics"
+                },
+                {
+                    title: "Major Trade Deal Signed Between Economic Superpowers",
+                    description: "Comprehensive agreement removes barriers and establishes new frameworks for digital trade and intellectual property.",
+                    urlToImage: "https://images.unsplash.com/photo-1580519542036-c47de6196ba5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "International Relations" },
+                    category: "politics"
+                },
+                {
+                    title: "Historic Election Sees Record Voter Turnout Worldwide",
+                    description: "Democratic participation reaches all-time high as citizens engage with critical global issues and leadership choices.",
+                    urlToImage: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Election Watch" },
+                    category: "politics"
+                }
+            ],
+            general: [
+                {
+                    title: "Global Summit Addresses Climate Change Challenges",
+                    description: "World leaders gather to discuss urgent climate action and sustainable development goals for the upcoming decade.",
+                    urlToImage: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Global News" },
+                    category: "general"
+                },
+                {
+                    title: "Major International Airport Reopens After Renovations",
+                    description: "The world's busiest airport completes $2 billion renovation project, featuring state-of-the-art facilities.",
+                    urlToImage: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80",
+                    publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                    url: "#",
+                    source: { name: "Travel Daily" },
+                    category: "general"
+                }
+            ]
+        };
+
+        // Category-specific data
+        const CATEGORY_DATA = {
+            latest: {
+                title: "⚡ Latest News",
+                description: "Real-time updates from all categories - Stay informed with the most recent developments",
+                color: "var(--accent)"
+            },
+            general: {
+                title: "🌍 All News",
+                description: "Stay updated with the most recent stories from around the world",
+                color: "var(--primary)"
+            },
+            technology: {
+                title: "💻 Technology News",
+                description: "Latest innovations, gadgets, and tech industry updates",
+                color: "var(--tech)"
+            },
+            business: {
+                title: "💼 Business News", 
+                description: "Market trends, financial updates, and business insights",
+                color: "var(--business)"
+            },
+            entertainment: {
+                title: "🎬 Entertainment News",
+                description: "Celebrity news, movies, music, and entertainment updates",
+                color: "var(--entertainment)"
+            },
+            health: {
+                title: "🏥 Health News",
+                description: "Medical breakthroughs, health tips, and wellness updates",
+                color: "var(--health)"
+            },
+            science: {
+                title: "🔬 Science News",
+                description: "Scientific discoveries, research, and innovation",
+                color: "var(--science)"
+            },
+            sports: {
+                title: "⚽ Sports News",
+                description: "Live scores, matches, and sports highlights",
+                color: "var(--sports)"
+            },
+            politics: {
+                title: "🏛️ Politics News",
+                description: "Government updates, elections, and political analysis",
+                color: "var(--politics)"
+            }
+        };
+
+        // Application State
+        let currentState = {
+            category: 'latest',
+            country: 'us',
+            page: 1,
+            pageSize: 12,
+            savedArticles: JSON.parse(localStorage.getItem('savedArticles')) || [],
+            darkMode: localStorage.getItem('darkMode') === 'true',
+            currentApi: 0
+        };
+
+        // DOM Elements
+        const elements = {
+            newsFeed: document.getElementById('newsFeed'),
+            featuredNews: document.getElementById('featuredNews'),
+            trendingList: document.getElementById('trendingList'),
+            loadingSpinner: document.getElementById('loadingSpinner'),
+            categoriesList: document.getElementById('categoriesList'),
+            searchInput: document.getElementById('searchInput'),
+            searchBtn: document.getElementById('searchBtn'),
+            darkModeToggle: document.getElementById('darkModeToggle'),
+            bookmarksBtn: document.getElementById('bookmarksBtn'),
+            readLaterModal: document.getElementById('readLaterModal'),
+            closeModal: document.getElementById('closeModal'),
+            savedArticles: document.getElementById('savedArticles'),
+            pagination: document.getElementById('pagination'),
+            newsChart: document.getElementById('newsChart'),
+            countrySelect: document.getElementById('countrySelect'),
+            apiStatus: document.getElementById('apiStatus'),
+            categoryHeader: document.getElementById('categoryHeader'),
+            latestNewsSection: document.getElementById('latestNewsSection'),
+            latestNewsGrid: document.getElementById('latestNewsGrid')
+        };
+
+        // Initialize Application
+        function init() {
+            setupEventListeners();
+            applyDarkMode();
+            updateCategoryHeader();
+            loadNews();
+            loadWeather();
+            setupChart();
+            displayLatestNews();
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Category selection
+            elements.categoriesList.addEventListener('click', (e) => {
+                if (e.target.tagName === 'LI') {
+                    document.querySelectorAll('.categories li').forEach(li => li.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentState.category = e.target.dataset.category;
+                    currentState.page = 1;
+                    updateCategoryHeader();
+                    toggleLatestNewsSection();
+                    loadNews();
+                }
+            });
+
+            // Footer category links
+            document.querySelectorAll('.footer-links a[data-category]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = e.target.dataset.category;
+                    document.querySelectorAll('.categories li').forEach(li => {
+                        li.classList.remove('active');
+                        if (li.dataset.category === category) {
+                            li.classList.add('active');
+                        }
+                    });
+                    currentState.category = category;
+                    currentState.page = 1;
+                    updateCategoryHeader();
+                    toggleLatestNewsSection();
+                    loadNews();
+                });
+            });
+
+            // Search functionality
+            elements.searchBtn.addEventListener('click', performSearch);
+            elements.searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.tagName === 'BUTTON') {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        loadNews();
+                    });
+                }
+            });
+
+            // Country selection
+            elements.countrySelect.addEventListener('change', (e) => {
+                currentState.country = e.target.value;
+                loadNews();
+                loadWeather();
+            });
+
+            // Dark mode toggle
+            elements.darkModeToggle.addEventListener('click', toggleDarkMode);
+
+            // Bookmarks modal
+            elements.bookmarksBtn.addEventListener('click', showSavedArticles);
+            elements.closeModal.addEventListener('click', () => {
+                elements.readLaterModal.style.display = 'none';
+            });
+
+            // Newsletter subscription
+            document.getElementById('subscribeBtn').addEventListener('click', subscribeNewsletter);
+
+            // Close modal when clicking outside
+            elements.readLaterModal.addEventListener('click', (e) => {
+                if (e.target === elements.readLaterModal) {
+                    elements.readLaterModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Toggle latest news section visibility
+        function toggleLatestNewsSection() {
+            if (currentState.category === 'latest') {
+                elements.latestNewsSection.style.display = 'block';
+            } else {
+                elements.latestNewsSection.style.display = 'none';
+            }
+        }
+
+        // Update category header
+        function updateCategoryHeader() {
+            const categoryData = CATEGORY_DATA[currentState.category];
+            elements.categoryHeader.innerHTML = `
+                <h1>${categoryData.title}</h1>
+                <p>${categoryData.description}</p>
+            `;
+            elements.categoryHeader.style.background = `linear-gradient(135deg, ${categoryData.color}, ${categoryData.color}99)`;
+        }
+
+        // Display latest news in the special section
+        function displayLatestNews() {
+            const latestArticles = NEWS_DATABASE.latest;
+            elements.latestNewsGrid.innerHTML = latestArticles.map(article => `
+                <div class="latest-news-card">
+                    <img src="${article.urlToImage}" alt="${article.title}" class="latest-news-image">
+                    <div class="latest-news-content">
+                        <div class="latest-news-time">${article.timeAgo}</div>
+                        <span class="news-category ${article.category}">${article.category}</span>
+                        <h3 class="news-title">${article.title}</h3>
+                        <p class="news-excerpt">${article.description}</p>
+                        <div class="news-meta">
+                            <span>${article.source.name}</span>
+                            <div class="news-actions">
+                                <i class="far fa-bookmark" data-article='${JSON.stringify(article).replace(/'/g, "&#39;")}'></i>
+                                <i class="far fa-share-square"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add event listeners to latest news cards
+            document.querySelectorAll('.latest-news-card .fa-bookmark').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const articleData = JSON.parse(e.target.dataset.article.replace(/&#39;/g, "'"));
+                    toggleSaveArticle(articleData, e.target);
+                });
+            });
+
+            document.querySelectorAll('.latest-news-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const articleData = JSON.parse(card.querySelector('.fa-bookmark').dataset.article.replace(/&#39;/g, "'"));
+                    if (articleData.url) {
+                        window.open(articleData.url, '_blank');
+                    }
+                });
+            });
+        }
+
+        // Load news based on current category
+        function loadNews() {
+            showLoading();
+            updateApiStatus(`Loading ${currentState.category} news...`, 'loading');
+            
+            try {
+                let articles = [];
+                
+                if (currentState.category === 'latest') {
+                    // For latest category, show all latest articles
+                    articles = NEWS_DATABASE.latest;
+                } else if (currentState.category === 'general') {
+                    // For general category, combine articles from all categories
+                    articles = Object.values(NEWS_DATABASE).flat().filter(article => article.category !== 'latest');
+                } else {
+                    // For specific categories, show only that category's articles
+                    articles = NEWS_DATABASE[currentState.category] || [];
+                }
+                
+                displayNews(articles);
+                displayFeaturedNews(articles.slice(0, 3));
+                displayTrendingNews(articles.slice(0, 5));
+                setupPagination(articles.length);
+                updateApiStatus(`✓ ${currentState.category === 'latest' ? 'Latest' : currentState.category} news loaded`, 'live');
+                
+            } catch (error) {
+                console.error('Error loading news:', error);
+                updateApiStatus('⚠ Using demo data', 'fallback');
+                // Fallback to general news
+                const articles = NEWS_DATABASE.general;
+                displayNews(articles);
+                displayFeaturedNews(articles.slice(0, 3));
+                displayTrendingNews(articles.slice(0, 5));
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display Functions
+        function displayNews(articles) {
+            elements.newsFeed.innerHTML = '';
+            
+            if (articles.length === 0) {
+                elements.newsFeed.innerHTML = `
+                    <div class="news-card" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-newspaper" style="font-size: 3rem; color: var(--gray); margin-bottom: 20px;"></i>
+                        <h2>No articles found</h2>
+                        <p>Try selecting a different category or country</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            articles.forEach(article => {
+                const newsCard = createNewsCard(article);
+                elements.newsFeed.appendChild(newsCard);
+            });
+        }
+
+        function displayFeaturedNews(articles) {
+            if (articles.length < 3) {
+                elements.featuredNews.innerHTML = '';
+                return;
+            }
+            
+            const categoryData = CATEGORY_DATA[currentState.category];
+            
+            elements.featuredNews.innerHTML = `
+                <div class="main-featured">
+                    <img src="${getImageUrl(articles[0])}" alt="${articles[0].title}">
+                    <div class="featured-overlay">
+                        <span class="news-category ${articles[0].category || currentState.category}">${articles[0].category || currentState.category}</span>
+                        <h2 class="news-title">${truncateText(articles[0].title, 100)}</h2>
+                        <div class="news-meta">
+                            <span><i class="far fa-clock"></i> ${formatDate(articles[0].publishedAt)}</span>
+                            <span><i class="far fa-eye"></i> ${Math.floor(Math.random() * 20) + 5}K views</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="side-featured">
+                    ${articles.slice(1, 3).map(article => `
+                        <div class="news-card">
+                            <img src="${getImageUrl(article)}" alt="${article.title}" class="news-image">
+                            <div class="news-content">
+                                <span class="news-category ${article.category || currentState.category}">${article.category || currentState.category}</span>
+                                <h3 class="news-title">${truncateText(article.title, 70)}</h3>
+                                <div class="news-meta">
+                                    <span><i class="far fa-clock"></i> ${formatDate(article.publishedAt)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function displayTrendingNews(articles) {
+            if (articles.length === 0) {
+                elements.trendingList.innerHTML = '<li>No trending articles</li>';
+                return;
+            }
+            
+            elements.trendingList.innerHTML = articles.map((article, index) => `
+                <li class="trending-item">
+                    <div class="trending-number">${index + 1}</div>
+                    <div class="trending-content">
+                        <h4>${truncateText(article.title, 60)}</h4>
+                        <span>${article.category || currentState.category} · ${Math.floor(Math.random() * 10) + 1}K views</span>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function createNewsCard(article) {
+            const card = document.createElement('div');
+            card.className = 'news-card';
+            
+            const isSaved = currentState.savedArticles.some(saved => saved.url === article.url);
+            const bookmarkClass = isSaved ? 'fas fa-bookmark' : 'far fa-bookmark';
+            const bookmarkStyle = isSaved ? 'color: var(--success);' : '';
+            const articleCategory = article.category || currentState.category;
+            
+            card.innerHTML = `
+                <img src="${getImageUrl(article)}" alt="${article.title}" class="news-image" onerror="this.src='https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80'">
+                <div class="news-content">
+                    <span class="news-category ${articleCategory}">${articleCategory}</span>
+                    <h2 class="news-title">${article.title}</h2>
+                    <p class="news-excerpt">${article.description || 'Read more about this developing story...'}</p>
+                    <div class="news-meta">
+                        <span><i class="far fa-clock"></i> ${formatDate(article.publishedAt)} · ${article.source?.name || 'News Source'}</span>
+                        <div class="news-actions">
+                            <i class="${bookmarkClass}" data-article='${JSON.stringify(article).replace(/'/g, "&#39;")}' style="${bookmarkStyle}"></i>
+                            <i class="far fa-share-square"></i>
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add event listeners to action buttons
+            const bookmarkBtn = card.querySelector('.fa-bookmark');
+            const likeBtn = card.querySelector('.fa-heart');
+            const shareBtn = card.querySelector('.fa-share-square');
+            
+            bookmarkBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleSaveArticle(article, bookmarkBtn);
+            });
+
+            likeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                likeBtn.classList.toggle('far');
+                likeBtn.classList.toggle('fas');
+                likeBtn.classList.toggle('liked');
+                if (likeBtn.classList.contains('liked')) {
+                    likeBtn.style.color = 'var(--accent)';
+                } else {
+                    likeBtn.style.color = '';
+                }
+            });
+
+            shareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                shareArticle(article);
+            });
+
+            card.addEventListener('click', () => {
+                if (article.url) {
+                    window.open(article.url, '_blank');
+                }
+            });
+
+            return card;
+        }
+
+        // Utility Functions
+        function getImageUrl(article) {
+            return article.urlToImage || article.image_url || 
+                   'https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80';
+        }
+
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            if (text.length <= maxLength) return text;
+            return text.substr(0, maxLength) + '...';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Recently';
+            
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInHours = (now - date) / (1000 * 60 * 60);
+            
+            if (diffInHours < 1) return 'Just now';
+            if (diffInHours < 24) return `${Math.floor(diffInHours)} hours ago`;
+            return `${Math.floor(diffInHours / 24)} days ago`;
+        }
+
+        function showLoading() {
+            elements.loadingSpinner.style.display = 'block';
+        }
+
+        function hideLoading() {
+            elements.loadingSpinner.style.display = 'none';
+        }
+
+        function updateApiStatus(message, type) {
+            elements.apiStatus.textContent = message;
+            elements.apiStatus.className = 'api-status';
+            if (type === 'live') {
+                elements.apiStatus.classList.add('live');
+            } else if (type === 'fallback') {
+                elements.apiStatus.classList.add('fallback');
+            }
+        }
+
+        function toggleDarkMode() {
+            currentState.darkMode = !currentState.darkMode;
+            applyDarkMode();
+            localStorage.setItem('darkMode', currentState.darkMode);
+        }
+
+        function applyDarkMode() {
+            if (currentState.darkMode) {
+                document.body.classList.add('dark-mode');
+                elements.darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                document.body.classList.remove('dark-mode');
+                elements.darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        function toggleSaveArticle(article, button) {
+            const index = currentState.savedArticles.findIndex(saved => saved.url === article.url);
+            
+            if (index === -1) {
+                currentState.savedArticles.push(article);
+                button.classList.remove('far');
+                button.classList.add('fas');
+                button.style.color = 'var(--success)';
+                showNotification('Article saved for later!');
+            } else {
+                currentState.savedArticles.splice(index, 1);
+                button.classList.remove('fas');
+                button.classList.add('far');
+                button.style.color = '';
+                showNotification('Article removed from saved!');
+            }
+            
+            localStorage.setItem('savedArticles', JSON.stringify(currentState.savedArticles));
+        }
+
+        function shareArticle(article) {
+            if (navigator.share) {
+                navigator.share({
+                    title: article.title,
+                    text: article.description,
+                    url: article.url
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(article.url).then(() => {
+                    showNotification('Link copied to clipboard!');
+                });
+            }
+        }
+
+        function showSavedArticles() {
+            elements.savedArticles.innerHTML = currentState.savedArticles.length > 0 
+                ? currentState.savedArticles.map(article => `
+                    <div class="news-card" style="margin-bottom: 15px;">
+                        <div class="news-content">
+                            <span class="news-category ${article.category || 'general'}">${article.category || 'general'}</span>
+                            <h3 class="news-title">${truncateText(article.title, 80)}</h3>
+                            <p class="news-excerpt">${article.description || 'No description available'}</p>
+                            <button onclick="window.open('${article.url}', '_blank')" class="filter-btn">Read Article</button>
+                            <button onclick="removeSavedArticle('${article.url}')" class="filter-btn" style="background: var(--danger); color: white;">Remove</button>
+                        </div>
+                    </div>
+                `).join('')
+                : '<p>No saved articles yet. Click the bookmark icon on any article to save it.</p>';
+            
+            elements.readLaterModal.style.display = 'flex';
+        }
+
+        function removeSavedArticle(url) {
+            currentState.savedArticles = currentState.savedArticles.filter(article => article.url !== url);
+            localStorage.setItem('savedArticles', JSON.stringify(currentState.savedArticles));
+            showSavedArticles();
+            loadNews(); // Refresh to update bookmark icons
+        }
+
+        function showNotification(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--success);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                z-index: 1001;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    document.body.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        function performSearch() {
+            const query = elements.searchInput.value.trim();
+            if (query) {
+                showNotification(`Searching for: ${query}`);
+                // Simple client-side search within current category
+                const cards = document.querySelectorAll('.news-card');
+                let found = 0;
+                cards.forEach(card => {
+                    const title = card.querySelector('.news-title').textContent.toLowerCase();
+                    const excerpt = card.querySelector('.news-excerpt').textContent.toLowerCase();
+                    if (title.includes(query.toLowerCase()) || excerpt.includes(query.toLowerCase())) {
+                        card.style.display = 'block';
+                        found++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                if (found === 0) {
+                    showNotification('No articles found matching your search');
+                }
+            } else {
+                // Show all cards if search is empty
+                const cards = document.querySelectorAll('.news-card');
+                cards.forEach(card => card.style.display = 'block');
+            }
+        }
+
+        function setupPagination(totalResults) {
+            const totalPages = Math.ceil(totalResults / currentState.pageSize);
+            elements.pagination.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentState.page ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.addEventListener('click', () => {
+                    currentState.page = i;
+                    loadNews();
+                });
+                elements.pagination.appendChild(pageBtn);
+            }
+        }
+
+        function setupChart() {
+            const ctx = elements.newsChart.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Technology', 'Health', 'Business', 'Entertainment', 'Sports'],
+                    datasets: [{
+                        data: [25, 20, 18, 15, 12],
+                        backgroundColor: [
+                            '#4361ee',
+                            '#4cc9f0',
+                            '#3a0ca3',
+                            '#f72585',
+                            '#f8961e'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadWeather() {
+            try {
+                const weatherData = await fetchMockWeatherData();
+                
+                document.getElementById('temperature').textContent = `${weatherData.temperature}°C`;
+                document.getElementById('weatherCondition').textContent = weatherData.condition;
+                document.getElementById('humidity').textContent = `${weatherData.humidity}%`;
+                document.getElementById('windSpeed').textContent = `${weatherData.windSpeed} km/h`;
+                document.getElementById('feelsLike').textContent = `${weatherData.feelsLike}°C`;
+                document.getElementById('location').textContent = getLocationName(currentState.country);
+                
+                const icon = document.getElementById('weatherIcon');
+                icon.className = getWeatherIcon(weatherData.condition);
+                
+            } catch (error) {
+                console.error('Weather data unavailable:', error);
+            }
+        }
+
+        function fetchMockWeatherData() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const conditions = ['Sunny', 'Cloudy', 'Rainy', 'Partly Cloudy'];
+                    const condition = conditions[Math.floor(Math.random() * conditions.length)];
+                    
+                    resolve({
+                        temperature: Math.floor(Math.random() * 15) + 15,
+                        condition: condition,
+                        humidity: Math.floor(Math.random() * 40) + 30,
+                        windSpeed: Math.floor(Math.random() * 15) + 5,
+                        feelsLike: Math.floor(Math.random() * 15) + 17
+                    });
+                }, 1000);
+            });
+        }
+
+        function getWeatherIcon(condition) {
+            const icons = {
+                'Sunny': 'fas fa-sun',
+                'Cloudy': 'fas fa-cloud',
+                'Rainy': 'fas fa-cloud-rain',
+                'Partly Cloudy': 'fas fa-cloud-sun'
+            };
+            return icons[condition] || 'fas fa-sun';
+        }
+
+        function getLocationName(countryCode) {
+            const locations = {
+                'us': 'New York, US',
+                'gb': 'London, UK',
+                'ca': 'Toronto, CA',
+                'au': 'Sydney, AU',
+                'in': 'New Delhi, IN'
+            };
+            return locations[countryCode] || 'Unknown Location';
+        }
+
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            if (email && email.includes('@')) {
+                showNotification('Successfully subscribed to newsletter!');
+                document.getElementById('newsletterEmail').value = '';
+            } else {
+                showNotification('Please enter a valid email address');
+            }
+        }
+
+        // Make functions available globally for HTML event handlers
+        window.removeSavedArticle = removeSavedArticle;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
