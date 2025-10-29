@@ -8,7 +8,7 @@ A modern, responsive news feed application that delivers real-time news across m
 - Dhanussha Harini.S
 - Chandra Shahithya.V 
 - Amirtha Chitra.M
-- Mary.M
+- Mary.V
 
 ## ✨ Features
 
@@ -130,5 +130,6 @@ The application can be viewed directly by opening `index.html` in a web browser.
 
 ---
 
-**Developed with ❤️ by Dhanussha Harini.S, Chandra Shahithya.V, Amirtha Chitra.M, and Mary.M**
+**Developed with ❤️ by Dhanussha Harini.S, Chandra Shahithya.V, Amirtha Chitra.M, and Mary.V
+**
 
