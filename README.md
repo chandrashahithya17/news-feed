@@ -35,7 +35,7 @@ A modern, responsive news feed application that delivers real-time news across m
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/chandrashahithya17/newsfeed.git
+git clone https://github.com/chandrashahithya17/news-feed.git
 
 # Navigate to project directory
 cd newsfeed
