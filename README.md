@@ -2,7 +2,7 @@
 
 A modern, responsive news feed application that delivers real-time news across multiple categories with an intuitive user interface and interactive features.
 
-**Repository**: https://github.com/chandrashahithya17/index.html
+**Repository**: https://github.com/chandrashahithya17/news-feed.html
 
 **Team Members**:
 - Dhanussha Harini.S
